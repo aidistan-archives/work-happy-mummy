@@ -1,0 +1,148 @@
+/*
+ * General
+ */
+*{ margin:0px; padding:0px; }
+body, textarea, select, input, button {
+    font-family: "Hiragino Sans GB","Microsoft YaHei","微软雅黑",tahoma,arial,simsun,"宋体";
+}
+
+.hidden {
+  display: none;
+}
+
+div.loading {
+  z-index: 1;
+  position:absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff url('images/load.gif') no-repeat fixed center;
+}
+
+div.background {
+  z-index: 2;
+  position:absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+div.background #background_img {
+  position:relative;
+  visibility: visible;
+  opacity: 1;
+}
+
+div.basket {
+  z-index: 3;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  height: 100px;
+  background: rgba(255,255,255, 0.38);
+}
+
+div.basket div.side { position: absolute; }
+div.basket #basket_lside { left: 0px; }
+div.basket #basket_rside { right: 0px; }
+
+div.basket div.button {
+  padding: 0px 15px 0px;
+  
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #444;
+  line-height: 100px;
+
+  cursor: pointer;
+}
+
+div.basket div.content {
+  width: auto;
+  height: 100%;
+  /* margin [js] */
+}
+
+div.basket div.item {
+  width: auto;
+  height: 100%;
+  display: inline-block;
+}
+
+div.basket div.item img {
+  width: auto;
+  height: 100%;
+
+  cursor: pointer;
+}
+
+div.foreground {
+  z-index: 4;
+  position: absolute;
+  width: 100%;
+  /* height [js] */
+}
+
+div.foreground div.dish {
+  position: relative;
+  top:15%;
+  left:15%;
+  width:70%;
+  height:70%;
+  border-radius: 25px;
+  background: rgba(255,255,255, 0.618);
+}
+
+div.foreground div.dish_hidden {
+  display: none;
+}
+
+div.foreground div.question {
+  width: 80%;
+  height: 38%;
+  margin: 0 auto;
+  padding-top: 40px;
+  font-size: 36px;
+  font-weight: bold;
+}
+
+div.foreground div.options {
+  width: 62%;
+  margin: 0px auto;
+}
+
+div.foreground p.option {
+  padding: 5px 20px;
+  font-size: 20px;
+  border-radius: 20px;
+}
+
+div.foreground p.option:hover {
+  background: #000;
+  color: #fff;
+}
+
+div.foreground div.rack {
+  position: relative;
+  top:20%;
+
+  text-align:center; /* HACK for center alignment */
+}
+
+div.foreground div.plate {
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  color: #ddd;
+  line-height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255, 0.38);
+  display: inline-block;
+  cursor: pointer;
+}
