@@ -13,7 +13,7 @@ $(function() {
 });
 
 function resize_page() {
-	resize_background_img();
+	// resize_background_img();
   refresh_basket();
   refresh_cloud();
 }
@@ -44,7 +44,6 @@ function refresh_basket() {
 }
 
 function refresh_cloud() {
-  // $("#background").hide();
 
   var fill = d3.scale.category20(),
       cloud_width = $(window).width(),
@@ -67,7 +66,8 @@ function refresh_cloud() {
         .attr("transform", "translate("+cloud_width/2+","+cloud_height/2+")")
         .selectAll("text")
         .data(words)
-        .enter().append("text").classed({"tag":true})
+        .enter().append("text")
+        .classed({"tag":true})
         .style("font-size", function(d) { return d.size + "px"; })
         .style("fill", function(d, i) { return fill(i); })
         .attr("text-anchor", "middle")
