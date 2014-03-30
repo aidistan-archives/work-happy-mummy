@@ -113,7 +113,7 @@ var view = {
         return {text: d.key, size: 12 + Math.random() * 48, status: d.value};
       }))
       .padding(5)
-      .rotate(function() { return ~~(Math.random() * 5) * 30 - 60; })
+      .rotate(function() { return ~~(Math.random() * 3) * 30 - 30; })
       .fontSize(function(d) { return d.size; })
       .on("end", function(words) { // Fired when all words have been placed. 
         $("#cloud").empty();
@@ -144,7 +144,11 @@ var view = {
             .text(function(d) { return d.text; })
             .on("mouseenter", function(d) { 
               d3.select("#cloud g").selectAll("text").transition()
-                .style("opacity", "0.1");
+                .style("opacity", "0.1")
+                .style("font-size", function(d) { return d.size + "px"; })
+                .attr("transform", function(d) {
+                  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                });
 
               d3.select(this).transition()
                 .style("opacity", "0.6")
