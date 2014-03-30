@@ -1,4 +1,6 @@
-var choices = {
+var model = {}
+
+model.data = {
   "旧衣物利用": {
     "category": "布尿布",
     "img": "images/items/005.png",
@@ -14,7 +16,7 @@ var choices = {
   },
   "竹纤维": {
     "category": "布尿布",
-    "img": "images/items/006.png",
+    "img": "images/items/002.png",
     "tags": {
       "柔软舒适": true,
       "吸水力强": true,
@@ -27,7 +29,7 @@ var choices = {
   },
   "全棉纱布": {
     "category": "布尿布",
-    "img": "images/items/006.png",
+    "img": "images/items/004.png",
     "tags": {
       "吸水力强": true,
       "耐用柔软": true,
@@ -41,7 +43,7 @@ var choices = {
   },
   "生态棉": {
     "category": "布尿布",
-    "img": "images/items/006.png",
+    "img": "images/items/005.png",
     "tags": {
       "免折叠": true,
       "使用方便": true,
@@ -55,7 +57,7 @@ var choices = {
   },
   "精梳棉": {
     "category": "布尿布",
-    "img": "images/items/004.png",
+    "img": "images/items/003.png",
     "tags": {
       "柔软舒适": true,
       "贴身": true,
@@ -66,7 +68,7 @@ var choices = {
   },
   "纸尿裤": {
     "category": "",
-    "img": "images/items/005.png",
+    "img": "images/items/004.png",
     "tags": {
       "男宝宝": true,
       "女宝宝": true,
@@ -79,13 +81,13 @@ var choices = {
   },
   "尿不湿": {
     "category": "",
-    "img": "images/items/004.png",
+    "img": "images/items/003.png",
     "tags": {
     }
   },
   "学步裤": {
     "category": "",
-    "img": "images/items/005.png",
+    "img": "images/items/006.png",
     "tags": {
     }
   },
@@ -97,7 +99,7 @@ var choices = {
   },
   "西瓜皮": {
     "category": "特色自制",
-    "img": "images/items/006.png",
+    "img": "images/items/005.png",
     "tags": {
       "闽南地区": true,
       "凉爽": true,
@@ -112,7 +114,7 @@ var choices = {
   },
   "草木灰": {
     "category": "特色自制",
-    "img": "images/items/003.png",
+    "img": "images/items/001.png",
     "tags": {
       "河南": true,
       "环保": true,
@@ -123,7 +125,7 @@ var choices = {
   },
   "沙土袋": {
     "category": "特色自制",
-    "img": "images/items/001.png",
+    "img": "images/items/006.png",
     "tags": {
       "山东": true,
       "干燥舒适": true,
@@ -136,7 +138,7 @@ var choices = {
   },
   "二维码纸尿裤": {
     "category": "特色纸尿裤",
-    "img": "images/items/005.png",
+    "img": "images/items/001.png",
     "tags": {
       "二维码": true,
       "高科技": true,
@@ -148,7 +150,7 @@ var choices = {
   },
   "史代尔纸尿裤": {
     "category": "特色纸尿裤",
-    "img": "images/items/006.png",
+    "img": "images/items/005.png",
     "tags": {
       "会说话": true,
       "高科技": true,
@@ -158,7 +160,7 @@ var choices = {
   },
   "有机纸尿裤": {
     "category": "特色纸尿裤",
-    "img": "images/items/001.png",
+    "img": "images/items/004.png",
     "tags": {
       "可食用": true,
       "有机": true,
@@ -171,7 +173,7 @@ var choices = {
   },
   "阿玛尼纸尿裤": {
     "category": "特色纸尿裤",
-    "img": "images/items/002.png",
+    "img": "images/items/003.png",
     "tags": {
       "奢侈品": true,
       "昂贵": true,
@@ -181,7 +183,7 @@ var choices = {
   },
   "LG黄土纸尿裤": {
     "category": "特色纸尿裤",
-    "img": "images/items/003.png",
+    "img": "images/items/005.png",
     "tags": {
       "有机": true,
       "环保": true,
@@ -192,7 +194,7 @@ var choices = {
   },
   "竹炭纸尿裤": {
     "category": "特色纸尿裤",
-    "img": "images/items/003.png",
+    "img": "images/items/002.png",
     "tags": {
       "竹炭": true,
       "清爽": true,
@@ -203,7 +205,7 @@ var choices = {
   },
   "静态负离子纸尿裤": {
     "category": "特色纸尿裤",
-    "img": "images/items/006.png",
+    "img": "images/items/002.png",
     "tags": {
       "抗pM2.5": true,
       "静态负离子": true,

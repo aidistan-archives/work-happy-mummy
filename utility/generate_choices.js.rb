@@ -5,7 +5,7 @@ require 'json'
 $if_pretty = true
 
 hash = {}
-File.open("choices.txt").each do |line|
+File.open("data.txt").each do |line|
   col = line.encode("UTF-8").chomp.split("\t")
   hash[col[1]] = {}
   hash[col[1]]['category'] = col[0]
@@ -17,6 +17,7 @@ File.open("choices.txt").each do |line|
   
 end
 
-fout = File.open("../choices.js", 'w:utf-8')
-fout.print "var choices = "
+fout = File.open("../data.js", 'w:utf-8')
+fout.puts ["var model = {}",""]
+fout.print "model.data = "
 fout.puts $if_pretty ? JSON.pretty_generate(hash) : hash.to_json
