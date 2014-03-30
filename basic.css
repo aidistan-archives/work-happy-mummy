@@ -16,3 +16,4 @@
 		#basket .item img { width: auto; height: 100%; cursor: pointer; }
 
 #cloud { z-index: 3; top: 0; left: 0; }
+	.tag { cursor: pointer; opacity: 1; }

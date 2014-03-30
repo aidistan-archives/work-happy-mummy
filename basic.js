@@ -1,5 +1,8 @@
 "use strict";
 
+/**
+ * Storing all choices and their status
+ */
 model.choices = (function() {
   var map = d3.map();
   for (var choice in model.data) {
@@ -7,14 +10,51 @@ model.choices = (function() {
   }
   return map;
 }());
-// Unavailable: 0
-// Available: 1
-// Selected: 2
+/**
+ * Storing all tags and their status
+ *   Unavailable: 0
+ *   Available: 1
+ *   Selected: 2
+ */
 model.tags = (function () {
   var tags = d3.map();
   for(var choice in model.data) { for(var tag in model.data[choice].tags) { tags.set(tag, 1); } }
   return tags;
 }());
+/**
+ * Update the model
+ */
+model.update = function() {
+  // Store checked and reset to unavailable
+  var checked_tags = [];
+  model.tags.forEach(function(key, value){
+    if (value == 2) { checked_tags.push(key); }
+    model.tags.set(key, 0);
+  });
+
+  // Find available choices
+  for(var choice in model.data) {
+    model.choices.set(choice, true);
+
+    for (var i=0; i<checked_tags.length; i++) {
+      if (!model.data[choice].tags[checked_tags[i]]) {
+        model.choices.set(choice, false);
+        break;
+      }
+    }
+    
+    if (model.choices.get(choice)) {
+      for(var tag in model.data[choice].tags) {
+        model.tags.set(tag, 1);
+      }
+    }
+  }
+
+  // Set checked back
+  for (var i=0; i<checked_tags.length; i++) {
+    model.tags.set(checked_tags[i], 2); 
+  };
+}
 
 var view = {
   default_colors:["#00AEEF", "#EA428A", "#EED500", "#F5A70D", "#8BCB30", "#9962C1"],
@@ -42,14 +82,24 @@ var view = {
         $("#basket_rside").width() + "px 0px " + 
         $("#basket_lside").width() + "px");
 
-    var item = d3.select("#basket #content")
+    var choices = []
+    model.choices.forEach(function(key, value) {
+      if (value) {
+        choices.push(key);
+      }
+    });
+
+    var divs = d3.select("#basket #content")
       .selectAll("div")
-      .data(model.choices.entries())
-      .enter().append("div")
+      .data(choices)
+      .classed({"item":true});
+    divs.selectAll("img")
+        .attr("src", function(d) { return model.data[d].img; });
+    divs.enter().append("div")
       .classed({"item":true})
       .append("img")
-      .attr("src", function(d) { return model.data[d.key].img; })
-      .style("display", function(d) { d.value ? "inline-block" : "none"; });
+      .attr("src", function(d) { return model.data[d].img; });
+    divs.exit().remove();
 
     return this;
   },
@@ -71,79 +121,61 @@ var view = {
           .attr("width", cloud_width)
           .attr("height", cloud_height)
           .append("g")
-            .attr("transform", "translate("+cloud_width/2+","+cloud_height/2+")")
-            .selectAll("text")
-            .data(words)
-            .enter().append("text")
-              .style("font-size", function(d) { return d.size + "px"; })
-              .style("fill", function(d, i) { 
-                if (d.status == 1) {
-                  return fill(i); 
-                } else {
-                  return "#ccc";
-                }
-              })
-              .style("cursor", "pointer")
-              .attr("text-anchor", "middle")
-              .attr("transform", function(d) {
-                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-              })
-              .text(function(d) { return d.text; })
-              .on("mouseenter", function(d) {
-                d3.select(this).transition()
-                  .style("font-size", "60px")
-                  .attr("transform", "translate(" + [d.x, d.y] + ")");
-              })
-              .on("mouseleave", function(d) {
-                d3.select(this).transition()
-                  .style("font-size", d.size + "px")
-                  .attr("transform", "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")");
-              })
-              .on("click", function(d) {
-                console.log(d.text)
-              });
+          .attr("transform", "translate("+cloud_width/2+","+cloud_height/2+")")
+          .selectAll("text")
+          .data(words)
+          .enter().append("text")
+            .classed({"tag":true})
+            .style("font-size", function(d) { return d.size + "px"; })
+            .style("fill", function(d, i) { 
+              if (d.status == 1) {
+                return fill(i); 
+              } else {
+                return "#cccccc";
+              }
+            })
+            .style("display", function(d) {
+              return d.status > 0 ? "inline-block" : "none";
+            })
+            .attr("text-anchor", "middle")
+            .attr("transform", function(d) {
+              return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+            })
+            .text(function(d) { return d.text; })
+            .on("mouseenter", function(d) { 
+              d3.select("#cloud g").selectAll("text").transition()
+                .style("opacity", "0.1");
+
+              d3.select(this).transition()
+                .style("opacity", "0.6")
+                .style("font-size", "60px")
+                .attr("transform", "translate(" + [d.x, d.y] + ")");
+            })
+            .on("mouseleave", function(d) {
+              d3.select("#cloud g").selectAll("text").transition()
+                .style("opacity", "1")
+                .style("font-size", function(d) { return d.size + "px"; })
+                .attr("transform", function(d) {
+                  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                });
+            })
+            .on("click", function(d) {
+              model.tags.set(d.text, d.status==1 ? 2 : 1);
+              model.update();
+              view.update_basket()
+                  .update_cloud();
+            });
       })
       .start();
   }
 };
 
-
-// update_model_by_checked_tags()
-
-// update_cloud
-// update_basket
-//  onMouseEnter
-//  onMouseLeave
-
-
 $(function() {
   $("#loading").hide();
 
   $(window).resize(function(){
-    view.update_background().update_basket().update_cloud();
+    view.update_background()
+        .update_basket()
+        .update_cloud();
   }).trigger("resize");
 });
-
-// // Global variables
-// function find_available_tags() {
-//   available_choices = [];
-//   available_tags = [];
-
-//   for(var choice in choices) {
-//     if ($.merge(choices[choice].tags, checked_tags).length == choices[choice].tags.length) {
-//       available_choices.push(choice);
-//       for(var tag in choices[choice].tags) {
-//         if (available_tags.indexOf(tag) == -1) { available_tags.push(tag) }
-//       }
-//     }
-//   }
-// }
-
-// function resize_page() {
-// 	resize_background_img();
-//   // Data
-//   find_available_tags
-//   // Views
-//   refresh_basket();
-//   refresh_cloud();
-// }
