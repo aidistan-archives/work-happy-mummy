@@ -110,10 +110,11 @@ var view = {
 
     d3.layout.cloud().size([cloud_width, cloud_height])
       .words(model.tags.entries().map(function(d) {
-        return {text: d.key, size: 12 + Math.random() * 48, status: d.value};
+        return {text: d.key, size: 14 + Math.random() * 36, status: d.value};
       }))
       .padding(5)
       .rotate(function() { return ~~(Math.random() * 3) * 30 - 30; })
+      .font("奶油甜心")
       .fontSize(function(d) { return d.size; })
       .on("end", function(words) { // Fired when all words have been placed. 
         $("#cloud").empty();
@@ -126,6 +127,7 @@ var view = {
           .data(words)
           .enter().append("text")
             .classed({"tag":true})
+            .style("font-family", "奶油甜心")
             .style("font-size", function(d) { return d.size + "px"; })
             .style("fill", function(d, i) { 
               if (d.status == 1) {
@@ -152,7 +154,7 @@ var view = {
 
               d3.select(this).transition()
                 .style("opacity", "0.6")
-                .style("font-size", "60px")
+                .style("font-size", 60 + "px")
                 .attr("transform", "translate(" + [d.x, d.y] + ")");
             })
             .on("mouseleave", function(d) {

@@ -1,3 +1,9 @@
+@font-face
+{
+font-family: 奶油甜心;
+src: url(tag-font.ttf);
+}
+
 * { margin:0px; padding:0px; font-size: 14px; font-family: "Hiragino Sans GB","Microsoft YaHei","微软雅黑",tahoma,arial,simsun,"宋体"; }
 
 .layer { position: absolute; }
