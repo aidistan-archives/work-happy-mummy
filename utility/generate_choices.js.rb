@@ -17,7 +17,5 @@ File.open("data.txt").each do |line|
   
 end
 
-fout = File.open("../data.js", 'w:utf-8')
-fout.puts ["var model = {}",""]
-fout.print "model.data = "
+fout = File.open("../data.json", 'w:utf-8')
 fout.puts $if_pretty ? JSON.pretty_generate(hash) : hash.to_json
