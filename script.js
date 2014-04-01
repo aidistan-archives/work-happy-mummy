@@ -22,15 +22,7 @@ $(function() {
   }, 1000);
 
   // Set window resizer
-  $(window).resize(function(){
-    if (ctrl.status == "welcome") {
-      view.refresh_welcome();
-    } else if (ctrl.status == "feature") {
-      view.refresh_background()
-          .refresh_basket()
-          .refresh_cloud();
-    }
-  });
+  $(window).resize(view.resize);
 });
 
 /**
@@ -86,10 +78,43 @@ $.ajax({
  * View
  */
 
-view.tag_colors = ["#00AEEF", "#EA428A", "#EED500", "#F5A70D", "#8BCB30", "#9962C1"];
+view.resize = function() {
+  if (ctrl.status == "welcome") {
+    view.refresh_welcome();
+  } else if (ctrl.status == "feature") {
+    view.refresh_background()
+        .refresh_basket()
+        .refresh_cloud();
+  }
+}
 
-view.refresh_welcome = function() {
-  $("#welcome #content").css("top", ($(window).height() - $("#welcome #content").height())>>1);
+view.welcome = { 
+  enter:function() {
+    this.refresh();
+    $("#welcome #tips").hide();
+    $("#welcome #title")
+      .hide().fadeIn(1000)
+      .click(function(){
+        $(this).unbind();
+        ctrl.next();
+      });
+  },
+  refresh:function() {
+    $("#welcome #content").css("top", ($(window).height() - $("#welcome #content").height())>>1);
+  },
+  leave:function() {
+    $("#welcome #title").fadeOut(1000, function(){
+      // Dismiss the title
+      $("#welcome #title").hide();
+      // Show the tips
+      $("#welcome #tips").fadeIn(500, function(){
+        // Prepare feature layer
+        view.refresh_cloud().refresh_background().refresh_basket();
+        // Delay then dismiss welcome
+        $("#welcome").delay(1000).fadeOut(500, function() { $(this).hide(); });
+      });
+    });
+  }
 }
 
 view.refresh_background = function() {
@@ -126,15 +151,13 @@ view.refresh_basket = function() {
 
   var divs = d3.select("#basket #content")
     .selectAll("div")
-    .data(choices)
-    .classed({"item":true});
-  divs.selectAll("img")
-      .attr("src", function(d) { return model.data[d].img; });
+    .data(choices, function(d){ return d; });
   divs.enter().append("div")
     .classed({"item":true})
     .append("img")
-    .attr("src", function(d) { return model.data[d].img; });
-  divs.exit().remove();
+    .attr("src", function(d) { return model.data[d].img; })
+    .style("opacity",0).transition().style("opacity",1);
+  divs.exit().transition().style("opacity",0).remove();
 
   return this;
 }
@@ -160,7 +183,7 @@ view.refresh_cloud = function(){
     /**
      *   When all words have been placed
      */
-    .on("end", function(words) { 
+    .on("end", function(words) {
       $("#cloud").empty();
       d3.select("#cloud")
         .attr("width", cloud_width).attr("height", cloud_height)
@@ -169,21 +192,97 @@ view.refresh_cloud = function(){
         .selectAll("text").data(words).enter().append("text")
         .classed({"tag":true, "text":true})
         .style("font-size", function(d) { return d.size + "px"; })
-        .style("fill", function(d, i) {
-          return d.status == 0 ? "#ccc" : view.tag_colors[i % view.tag_colors.length];
-        })
+        .style("fill", view.tag.color)
         .style("opacity", function(d) { return d.opacity; })
         .attr("text-anchor", "middle")
         .attr("transform", function(d) {
           return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
         })
         .text(function(d) { return d.text; })
-        .on("mouseover", ctrl.tag_on_mouseover)
-        .on("mouseout", ctrl.tag_on_mouseout)
-        .on("click", ctrl.tag_click);
+        .on("mouseover", view.tag.onMouseover)
+        .on("mouseout", view.tag.onMouseout)
+        .on("click", view.tag.onClick);
     })
     .start();
     return this;
+}
+
+view.tag = {
+  colors:["#00AEEF", "#EA428A", "#EED500", "#F5A70D", "#8BCB30", "#9962C1"],
+  color:function(d, i) {
+    switch(d.status) {
+    case 0: return "#ccc";
+    case 1: return view.tag.colors[i % view.tag.colors.length];
+    case 2: return "#333";
+    }
+  },
+  onMouseover:function(d) {
+    if (d.status == 0) { return; }
+    d3.selectAll("#cloud g text").transition()
+      .style("opacity", "0.1")
+      .style("font-size", function(d) { return d.size + "px"; })
+      .attr("transform", function(d) {
+        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+      });
+
+    d3.select(this).transition()
+      .style("opacity", "1")
+      .style("font-size", 60 + "px")
+      .attr("transform", "translate(" + [d.x, d.y] + ")");
+  },
+  onMouseout:function(d) {
+    if (d.status == 0) { return; }
+    d3.selectAll("#cloud g text").transition()
+      .style("opacity", function(d) { return d.opacity; })
+      .style("font-size", function(d) { return d.size + "px"; })
+      .attr("transform", function(d) {
+        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+      });
+  },
+  onClick:function(d) {
+    if (d.status == 0) { return; }
+    // Flip the status
+    model.tags.set(d.text, d.status==1 ? 2 : 1);
+    // Store checked and reset to unavailable
+    var selected_tags = [];
+    model.tags.forEach(function(key, value){
+      if (value == 2) { selected_tags.push(key); }
+      model.tags.set(key, 0);
+    });
+    // Find available choices
+    for(var choice in model.data) {
+      model.choices.set(choice, true);
+
+      for (var i=0; i<selected_tags.length; i++) {
+        if (!model.data[choice].tags[selected_tags[i]]) {
+          model.choices.set(choice, false);
+          break;
+        }
+      }
+      
+      if (model.choices.get(choice)) {
+        for(var tag in model.data[choice].tags) {
+          model.tags.set(tag, 1);
+        }
+      }
+    }
+    // Set selected flag back
+    for (var i=0; i<selected_tags.length; i++) {
+      model.tags.set(selected_tags[i], 2); 
+    };
+    // Update the data for cloud
+    var data = d3.selectAll("#cloud g text").data();
+    for (var i=0; i<data.length; i++) {
+      data[i].status = model.tags.get(data[i].text);
+      data[i].opacity = data[i].status > 0 ? 1 : 0.1
+    }
+    // Update views
+    view.refresh_basket();
+    console.log(this)
+    d3.selectAll("#cloud g text").style("fill", view.tag.color);
+    // Animation
+    d3.select(this).transition().style("font-size", "0px");
+  }
 }
 
 /**
@@ -205,123 +304,13 @@ ctrl.next = function() {
   if (ctrl.status == "loading") {
     $("#loading").hide();
     next = "welcome";
-    ctrl.enter_welcome();    
+    view.welcome.enter();    
   } 
   else if (ctrl.status == "welcome") {
-    ctrl.leave_welcome();
+    view.welcome.leave();
     next = "feature";
   }
 
-  // For debug
-  console.log("Changing status from \"" + ctrl.status + "\" to \"" + next + "\"");
   ctrl.status = next;
   return next;
-}
-
-ctrl.enter_welcome = function() {
-  view.refresh_welcome();
-  
-  $("#welcome #tips").hide();
-  $("#welcome #title")
-    .hide().fadeIn(1000)
-    .click(function(){
-      $(this).unbind();
-      ctrl.next();
-    });
-}
-
-ctrl.leave_welcome = function() {
-  $("#welcome #title").fadeOut(1000, function(){
-    // Dismiss the title
-    $("#welcome #title").hide();
-    // Show the tips
-    $("#welcome #tips").fadeIn(500, function(){
-      // Prepare feature layer
-      view.refresh_cloud().refresh_background().refresh_basket();
-      // Delay then dismiss welcome
-      $("#welcome").delay(1000).fadeOut(500, function() { $(this).hide(); });
-    });
-  });
-}
-
-ctrl.tag_on_mouseover = function(d) {
-  if (d.status == 0) { return; }
-  d3.selectAll("#cloud g text").transition()
-    .style("opacity", "0.1")
-    .style("font-size", function(d) { return d.size + "px"; })
-    .attr("transform", function(d) {
-      return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-    });
-
-  d3.select(this).transition()
-    .style("opacity", "1")
-    .style("font-size", 60 + "px")
-    .attr("transform", "translate(" + [d.x, d.y] + ")");
-}
-
-ctrl.tag_on_mouseout = function(d) {
-  if (d.status == 0) { return; }
-  d3.selectAll("#cloud g text").transition()
-    .style("opacity", function(d) { return d.opacity; })
-    .style("font-size", function(d) { return d.size + "px"; })
-    .attr("transform", function(d) {
-      return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-    });
-}
-
-ctrl.tag_click = function(d) {
-  if (d.status == 0) { return; }
-
-  /**
-   * Update model
-   */
-
-  // Flip the status
-  model.tags.set(d.text, d.status==1 ? 2 : 1);
-  // Store checked and reset to unavailable
-  var selected_tags = [];
-  model.tags.forEach(function(key, value){
-    if (value == 2) { selected_tags.push(key); }
-    model.tags.set(key, 0);
-  });
-  // Find available choices
-  for(var choice in model.data) {
-    model.choices.set(choice, true);
-
-    for (var i=0; i<selected_tags.length; i++) {
-      if (!model.data[choice].tags[selected_tags[i]]) {
-        model.choices.set(choice, false);
-        break;
-      }
-    }
-    
-    if (model.choices.get(choice)) {
-      for(var tag in model.data[choice].tags) {
-        model.tags.set(tag, 1);
-      }
-    }
-  }
-  // Set selected flag back
-  for (var i=0; i<selected_tags.length; i++) {
-    model.tags.set(selected_tags[i], 2); 
-  };
-  // Update the data for cloud
-  var data = d3.selectAll("#cloud g text").data();
-  for (var i=0; i<data.length; i++) {
-    data[i].status = model.tags.get(data[i].text);
-    data[i].opacity = data[i].status > 0 ? 1 : 0.1
-  }
-  
-  /**
-   * Update view
-   */
-  view.refresh_basket();
-  d3.selectAll("#cloud g text").style("fill", function(d, i) {
-      switch(d.status) {
-      case 0: return "#ccc";
-      case 1: return view.tag_colors[i % view.tag_colors.length];
-      case 2: return "#333";
-      }
-  });
-  d3.select(this).transition().style("font-size", "0px");
 }
