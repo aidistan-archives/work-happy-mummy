@@ -82,43 +82,6 @@ $.ajax({
   }
 });
 
-model.update = function() {
-  // Store checked and reset to unavailable
-  var selected_tags = [];
-  model.tags.forEach(function(key, value){
-    if (value == 2) { selected_tags.push(key); }
-    model.tags.set(key, 0);
-  });
-  // Find available choices
-  for(var choice in model.data) {
-    model.choices.set(choice, true);
-
-    for (var i=0; i<selected_tags.length; i++) {
-      if (!model.data[choice].tags[selected_tags[i]]) {
-        model.choices.set(choice, false);
-        break;
-      }
-    }
-    
-    if (model.choices.get(choice)) {
-      for(var tag in model.data[choice].tags) {
-        model.tags.set(tag, 1);
-      }
-    }
-  }
-  // Set selected flag back
-  for (var i=0; i<selected_tags.length; i++) {
-    model.tags.set(selected_tags[i], 2); 
-  };
-  // Update the data for cloud
-  var data = d3.selectAll("#cloud g text").data();
-  for (var i=0; i<data.length; i++) {
-    data[i].status = model.tags.get(data[i].text);
-    data[i].opacity = data[i].status > 0 ? 1 : 0.1
-    data[i].fill = data[i].status == 2 ? "#ccc" : view.tag_colors[i % view.tag_colors.length];
-  }
-}
-
 /**
  * View
  */
@@ -177,7 +140,6 @@ view.refresh_basket = function() {
 }
 
 view.refresh_cloud = function(){
-  // var fill = d3.scale.category20(),
   var cloud_width = $(window).width(),
       cloud_height = $(window).height() - $("#basket").height();
   /**
@@ -190,7 +152,7 @@ view.refresh_cloud = function(){
         text: d.key,
         size: 14 + Math.random() * 36,
         status: d.value,
-        opacity: d.value > 0 ? 1 : 0.1
+        opacity: d.value > 0 ? 1 : 0.1,
       };
     }))
     .rotate(function(d) { return ~~(Math.random() * 5) * 15 - 30; })
@@ -208,7 +170,7 @@ view.refresh_cloud = function(){
         .classed({"tag":true, "text":true})
         .style("font-size", function(d) { return d.size + "px"; })
         .style("fill", function(d, i) {
-          return d.status == 2 ? "#ccc" : view.tag_colors[i % view.tag_colors.length];
+          return d.status == 0 ? "#ccc" : view.tag_colors[i % view.tag_colors.length];
         })
         .style("opacity", function(d) { return d.opacity; })
         .attr("text-anchor", "middle")
@@ -216,46 +178,12 @@ view.refresh_cloud = function(){
           return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
         })
         .text(function(d) { return d.text; })
-        .on("mouseover", function(d) {
-          if (d.status == 0) { return; }
-          d3.select("#cloud g").selectAll("text").transition()
-            .style("opacity", "0.1")
-            .style("font-size", function(d) { return d.size + "px"; })
-            .attr("transform", function(d) {
-              return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-            });
-
-          d3.select(this).transition()
-            .style("opacity", "1")
-            .style("font-size", 60 + "px")
-            .attr("transform", "translate(" + [d.x, d.y] + ")");
-        })
-        .on("mouseout", function(d) {
-          if (d.status == 0) { return; }
-          d3.select("#cloud g").selectAll("text").transition()
-            .style("opacity", function(d) { return d.opacity; })
-            .style("font-size", function(d) { return d.size + "px"; })
-            .attr("transform", function(d) {
-              return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-            });
-        })
-        .on("click", function(d) {
-          if (d.status == 0) { return; }
-          model.tags.set(d.text, d.status==1 ? 2 : 1);
-          model.update();
-          view.refresh_basket().update_cloud();
-        });
+        .on("mouseover", ctrl.tag_on_mouseover)
+        .on("mouseout", ctrl.tag_on_mouseout)
+        .on("click", ctrl.tag_click);
     })
     .start();
     return this;
-}
-
-view.update_cloud = function() {
-  d3.selectAll("#cloud g text")
-    .style("fill", function(d, i) {
-      return d.status == 2 ? "#ccc" : view.tag_colors[i % view.tag_colors.length];
-    })
-    .style("opacity", function(d) { return d.opacity; });
 }
 
 /**
@@ -314,4 +242,86 @@ ctrl.leave_welcome = function() {
       $("#welcome").delay(1000).fadeOut(500, function() { $(this).hide(); });
     });
   });
+}
+
+ctrl.tag_on_mouseover = function(d) {
+  if (d.status == 0) { return; }
+  d3.selectAll("#cloud g text").transition()
+    .style("opacity", "0.1")
+    .style("font-size", function(d) { return d.size + "px"; })
+    .attr("transform", function(d) {
+      return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+    });
+
+  d3.select(this).transition()
+    .style("opacity", "1")
+    .style("font-size", 60 + "px")
+    .attr("transform", "translate(" + [d.x, d.y] + ")");
+}
+
+ctrl.tag_on_mouseout = function(d) {
+  if (d.status == 0) { return; }
+  d3.selectAll("#cloud g text").transition()
+    .style("opacity", function(d) { return d.opacity; })
+    .style("font-size", function(d) { return d.size + "px"; })
+    .attr("transform", function(d) {
+      return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+    });
+}
+
+ctrl.tag_click = function(d) {
+  if (d.status == 0) { return; }
+
+  /**
+   * Update model
+   */
+
+  // Flip the status
+  model.tags.set(d.text, d.status==1 ? 2 : 1);
+  // Store checked and reset to unavailable
+  var selected_tags = [];
+  model.tags.forEach(function(key, value){
+    if (value == 2) { selected_tags.push(key); }
+    model.tags.set(key, 0);
+  });
+  // Find available choices
+  for(var choice in model.data) {
+    model.choices.set(choice, true);
+
+    for (var i=0; i<selected_tags.length; i++) {
+      if (!model.data[choice].tags[selected_tags[i]]) {
+        model.choices.set(choice, false);
+        break;
+      }
+    }
+    
+    if (model.choices.get(choice)) {
+      for(var tag in model.data[choice].tags) {
+        model.tags.set(tag, 1);
+      }
+    }
+  }
+  // Set selected flag back
+  for (var i=0; i<selected_tags.length; i++) {
+    model.tags.set(selected_tags[i], 2); 
+  };
+  // Update the data for cloud
+  var data = d3.selectAll("#cloud g text").data();
+  for (var i=0; i<data.length; i++) {
+    data[i].status = model.tags.get(data[i].text);
+    data[i].opacity = data[i].status > 0 ? 1 : 0.1
+  }
+  
+  /**
+   * Update view
+   */
+  view.refresh_basket();
+  d3.selectAll("#cloud g text").style("fill", function(d, i) {
+      switch(d.status) {
+      case 0: return "#ccc";
+      case 1: return view.tag_colors[i % view.tag_colors.length];
+      case 2: return "#333";
+      }
+  });
+  d3.select(this).transition().style("font-size", "0px");
 }
