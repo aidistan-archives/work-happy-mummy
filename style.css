@@ -18,10 +18,10 @@
 	#basket .side { position: absolute; }
 		#basket #left.side { left: 0px; }
 		#basket #right.side { right: 0px; }
-		/*#basket .button { padding: 0px 15px 0px; font-size: 24px; font-weight: bold; text-align: center; color: #444; line-height: 100px; cursor: pointer; }*/
-		#basket .button { margin: 0 16px 0 16px; border-right: 8px solid white; border-left: 8px solid white; }
-		#basket #up.button { margin-top: 23px; margin-bottom: 6px; border-bottom: 24px solid #000; opacity: 0; }
-		#basket #down.button { margin-top: 6px; margin-bottom: 23px; border-top: 24px solid #000; opacity: 0; }
+		#basket .button { width:24px; height:24x; line-height: 24px; font-size: 16px; font-weight: bold; text-align: center; color: white; background: #666; border-radius: 50%; opacity: 0; }
+		#basket .button { transform:rotate(90deg); -ms-transform:rotate(90deg); /* IE 9 */ -webkit-transform:rotate(90deg); /* Opera, Chrome, and Safari */ }
+		#basket #up.button { margin: 23px 10px 6px; }
+		#basket #down.button { margin: 6px 10px 0px; }
 	#basket #content { width: auto; height: 100%; overflow: hidden; }
 		#basket .item { width: 100px; height: auto; margin: 1px 0px; display: inline-block; }
 		#basket .item img { width: 100px; height: auto; cursor: pointer; }
