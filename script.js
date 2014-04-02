@@ -1,29 +1,6 @@
 "use strict";
 
-var model = {}, view = {}, ctrl = {};
-
-$(function() {
-  // Set AJAX watcher
-  ctrl.ajax = setInterval(function(){
-    var allDone = true;
-    
-    for(var flag in model.ajax) {
-      console.log(flag + ":" + model.ajax[flag]) // DEBUG
-      if (!model.ajax[flag]) {
-        allDone = false;
-        break;
-      }
-    }
-
-    if (allDone) {
-      clearInterval(ctrl.ajax);
-      ctrl.next();
-    }
-  }, 1000);
-
-  // Set window resizer
-  $(window).resize(view.resize);
-});
+var model = {}, view = {}, ctrl = {}; $(function() { ctrl.onLoad(); });
 
 /**
  * Model
@@ -78,14 +55,17 @@ $.ajax({
  * View
  */
 
-view.resize = function() {
-  if (ctrl.status == "welcome") {
-    view.refresh_welcome();
-  } else if (ctrl.status == "feature") {
+view.onResize = function() { view.refresh(ctrl.status); }
+
+view.refresh = function(status) {
+  if (status == "welcome") {
+    view.welcome.refresh();
+  } else if (status == "feature") {
     view.refresh_background()
-        .refresh_basket()
         .refresh_cloud();
+    view.basket.refresh();
   }
+  return this
 }
 
 view.welcome = { 
@@ -96,11 +76,11 @@ view.welcome = {
       .hide().fadeIn(1000)
       .click(function(){
         $(this).unbind();
-        ctrl.next();
+        ctrl.gotoFeature();
       });
   },
   refresh:function() {
-    $("#welcome #content").css("top", ($(window).height() - $("#welcome #content").height())>>1);
+    $("#welcome #wrapper").css("top", ($(window).height() - $("#welcome #wrapper").height())>>1);
   },
   leave:function() {
     $("#welcome #title").fadeOut(1000, function(){
@@ -109,9 +89,9 @@ view.welcome = {
       // Show the tips
       $("#welcome #tips").fadeIn(500, function(){
         // Prepare feature layer
-        view.refresh_cloud().refresh_background().refresh_basket();
+        view.refresh("feature");
         // Delay then dismiss welcome
-        $("#welcome").delay(1000).fadeOut(500, function() { $(this).hide(); });
+        $("#welcome").delay(1000).fadeOut(500, function() {$(this).hide(); });
       });
     });
   }
@@ -137,30 +117,75 @@ view.refresh_background = function() {
   return this;
 }
 
-view.refresh_basket = function() {
-  $("#basket #content").css("margin", "0px " + 
-      $("#basket_rside").width() + "px 0px " + 
-      $("#basket_lside").width() + "px");
-
-  var choices = []
-  model.choices.forEach(function(key, value) {
-    if (value) {
-      choices.push(key);
+view.basket = {
+  refresh:function() {
+    $("#basket #content").css("margin", "0px " + 
+        ($("#basket #right.side").width()+0) + "px 0px " + 
+        ($("#basket #left.side").width()+0) + "px");
+    // Count the number of choices to show
+    view.basket.choices = []
+    model.choices.forEach(function(key, value) {
+      if (value) {
+        view.basket.choices.push(key);
+      }
+    });
+    // Show the first page
+    view.basket.page = 0;
+    view.basket.length = ~~($("#basket #content").width() / 100);
+    view.basket.pageMax = ~~(view.basket.choices.length / view.basket.length);
+    view.basket.scrollTo(0);
+    return this;
+  },
+  scrollTo:function(page) {
+    var choices = view.basket.choices.slice(
+      page*view.basket.length, 
+      (page == view.basket.pageMax) ? view.basket.choices.length : (page*view.basket.length + view.basket.length)
+    );
+    // Content
+    var divs = d3.select("#basket #content")
+      .selectAll("div")
+      .data(choices, function(d, i){ return d; });
+    divs.enter().append("div")
+      .classed({"item":true})
+      .append("img")
+      .attr("title", function(d) { return d; })
+      .attr("src", function(d) { return model.data[d].img; })
+      .on("click", function(){ ctrl.gotoProduct(d3.select(this).attr("title")); })
+      .style("opacity",0).transition().style("opacity",1);
+    divs.exit().transition().style("opacity",0).remove();
+    // Buttons
+    if(page > 0) {
+      d3.select("#basket #up.button").style("cursor", "pointer")
+        .on("mouseover", function(){ d3.select(this).transition().style("opacity", 0.6); })
+        .on("mouseout", function(){ d3.select(this).transition().style("opacity", 0.3); })
+        .on("click", view.basket.scrollUp)
+        .transition().style("opacity", 0.3);
+    } else {
+      d3.select("#basket #up.button").style("cursor", "default")
+        .on("mouseover", null)
+        .on("mouseout", null)
+        .on("click", null)
+        .transition().style("opacity", 0);
     }
-  });
-
-  var divs = d3.select("#basket #content")
-    .selectAll("div")
-    .data(choices, function(d){ return d; });
-  divs.enter().append("div")
-    .classed({"item":true})
-    .append("img")
-    .attr("src", function(d) { return model.data[d].img; })
-    .style("opacity",0).transition().style("opacity",1);
-  divs.exit().transition().style("opacity",0).remove();
-
-  return this;
+    if(page < view.basket.pageMax) {
+      d3.select("#basket #down.button").style("cursor", "pointer")
+        .on("mouseover", function(){ d3.select(this).transition().style("opacity", 0.6); })
+        .on("mouseout", function(){ d3.select(this).transition().style("opacity", 0.3); })
+        .on("click", view.basket.scrollDown)
+        .transition().style("opacity", 0.3);
+    } else {
+      d3.select("#basket #down.button").style("cursor", "default")
+        .on("mouseover", null)
+        .on("mouseout", null)
+        .on("click", null)
+        .transition().style("opacity", 0);
+    }
+    view.basket.page = page;
+  },
+  scrollUp:function() { view.basket.scrollTo(view.basket.page - 1); },
+  scrollDown:function() { view.basket.scrollTo(view.basket.page + 1); }
 }
+
 
 view.refresh_cloud = function(){
   var cloud_width = $(window).width(),
@@ -277,8 +302,7 @@ view.tag = {
       data[i].opacity = data[i].status > 0 ? 1 : 0.1
     }
     // Update views
-    view.refresh_basket();
-    console.log(this)
+    view.basket.refresh();
     d3.selectAll("#cloud g text").style("fill", view.tag.color);
     // Animation
     d3.select(this).transition().style("font-size", "0px");
@@ -298,19 +322,49 @@ view.tag = {
  */
 ctrl.status = "loading"
 
-ctrl.next = function() {
-  var next;
+ctrl.onLoad = function() {
+  $("#product").hide();
 
-  if (ctrl.status == "loading") {
-    $("#loading").hide();
-    next = "welcome";
-    view.welcome.enter();    
-  } 
-  else if (ctrl.status == "welcome") {
-    view.welcome.leave();
-    next = "feature";
-  }
+  // Set AJAX watcher
+  ctrl.ajax = setInterval(function(){
+    var allDone = true;
+    
+    for(var flag in model.ajax) {
+      console.log(flag + ":" + model.ajax[flag]) // DEBUG
+      if (!model.ajax[flag]) {
+        allDone = false;
+        break;
+      }
+    }
 
-  ctrl.status = next;
-  return next;
+    if (allDone) {
+      clearInterval(ctrl.ajax);
+      ctrl.gotoWelcome();
+    }
+  }, 1000);
+
+  // Set window resizer
+  $(window).resize(view.onResize);
+}
+
+ctrl.gotoWelcome = function() {
+  $("#loading").hide();
+  ctrl.status = "welcome";
+  view.welcome.enter();
+}
+
+ctrl.gotoFeature = function() {
+  view.welcome.leave();
+  ctrl.status = "feature";
+}
+
+ctrl.gotoProduct = function(choice) {
+  $("#product #title").text(choice);
+  $("#product #image").attr("src", model.data[choice].img);
+  $("#product #desc").text("我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。");
+  $("#product").fadeIn('fast').click(ctrl.backtoFeature);
+}
+
+ctrl.backtoFeature = function() {
+  $("#product").unbind().fadeOut('fast');
 }

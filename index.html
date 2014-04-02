@@ -19,7 +19,7 @@
         <div id="loading" class="layer"></div>
 
         <div id="welcome" class="layer">
-            <div id="content" style="position: relative;">
+            <div id="wrapper" style="position: relative;">
                 <p id="title" class="text">尿布攻略</p>
                 <p id="tips" class="text">请点击您所关注的特点</p>
             </div>
@@ -30,16 +30,22 @@
         </div>
 
         <div id="basket" class="layer">
-            <div id="basket_lside" class="side">
-                <div id="basket_lbtn" class="button">&lt;</div>
-            </div>
-            <div id="basket_rside" class="side">
-                <div id="basket_rbtn" class="button">&gt;</div>
+            <div id="left" class="side">
+                <div id="up" class="button"></div>
+                <div id="down" class="button"></div>
             </div>
             <div id="content"></div>
         </div>
 
         <svg id="cloud" class="layer"></svg>
+
+        <div id="product" class="layer">
+            <div id="wrapper">
+                <p id="title" class="text"></p>
+                <img id="image"></img>
+                <p id="desc"></p>
+            </div>
+        </div>
 
         <!-- Script goes here-->
         <script type="text/javascript" src="script.js"></script>
