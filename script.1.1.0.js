@@ -12,7 +12,7 @@ model.ajax = {
 
 // model.ajax.data
 $.ajax({
-  url: "data.json",
+  url: "data.1.1.0.json",
   beforeSend: function(xhr) {
     if (xhr.overrideMimeType) { xhr.overrideMimeType("application/json"); }
   },
