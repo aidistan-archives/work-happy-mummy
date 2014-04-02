@@ -305,7 +305,8 @@ view.tag = {
     view.basket.refresh();
     d3.selectAll("#cloud g text").style("fill", view.tag.color);
     // Animation
-    d3.select(this).transition().style("font-size", "0px");
+    d3.select(this).transition().style("font-size", "0px")
+                   .transition().style("font-size", "60px");
   }
 }
 
