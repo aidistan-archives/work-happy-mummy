@@ -149,7 +149,7 @@ view.basket = {
       .classed({"item":true})
       .append("img")
       .attr("title", function(d) { return d; })
-      .attr("src", function(d) { return model.data[d].img; })
+      .attr("src", function(d) { return model.data[d].basket_img; })
       .on("click", function(){ ctrl.gotoProduct(d3.select(this).attr("title")); })
       .style("opacity",0).transition().style("opacity",1);
     divs.exit().transition().style("opacity",0).remove();
@@ -360,8 +360,8 @@ ctrl.gotoFeature = function() {
 
 ctrl.gotoProduct = function(choice) {
   $("#product #title").text(choice);
-  $("#product #image").attr("src", model.data[choice].img);
-  $("#product #desc").text("我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。我也不知道这是什么。。。");
+  $("#product #image").attr("src", model.data[choice].product_img);
+  $("#product #desc").text(model.data[choice].desc);
   $("#product").fadeIn('fast').click(ctrl.backtoFeature);
 }
 
