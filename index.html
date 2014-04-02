@@ -11,6 +11,7 @@
         <!-- Description -->
         <meta name="description" content="">
         <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
+        <script type="text/javascript" src="http://www.youziku.com/UserDownFile/jquery.md5.js"></script>
         <script type="text/javascript" src="lib/d3/d3.min.js" charset="utf-8"></script>
         <script type="text/javascript" src="lib/d3-cloud/d3.layout.cloud.js" charset="utf-8"></script>
         <link rel="stylesheet" type="text/css" href="style.css">
@@ -20,8 +21,8 @@
 
         <div id="welcome" class="layer">
             <div id="wrapper" style="position: relative;">
-                <p id="title" class="text">尿布攻略</p>
-                <p id="tips" class="text">请点击您所关注的特点</p>
+                <p id="title" class="NaiYou">尿布攻略</p>
+                <p id="tips" class="NaiYou">请点击您所关注的特点</p>
             </div>
         </div>
  
@@ -41,13 +42,35 @@
 
         <div id="product" class="layer">
             <div id="wrapper">
-                <p id="title" class="text"></p>
+                <p id="title" class="NaiYou"></p>
                 <img id="image"></img>
                 <p id="desc"></p>
             </div>
         </div>
 
-        <!-- Script goes here-->
-        <script type="text/javascript" src="script.js"></script>
     </body>
+    <script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript">
+        (function() {
+            var resultStr = "尿布攻略请点击您所关注的特点安全卫生二维码竹炭贴身舒适体检价格高玉米不易干使用方便使用繁琐价格较贵凉爽个性自动调湿干燥舒适不耐用不密实易起毛会说话去除异味耐用柔软方便不太卫生高品质贴身环保奇葩 河南奢侈品清洗繁琐婆婆喜欢易生菌高科技较干爽抗菌女宝宝易感染松软密实静态负离子地域特色昂贵非转基因气候相关清爽男宝宝炒制沙土可食用安全放心需消毒环保节约松懈变形卫生安全闽南地区山东便宜透气性差方便易用旧物利用开始用比较硬奇葩不卫生私人定制安全舒适卫生舒适温暖有机免折叠吸水一般吸水力强小森林柔软舒适抗pM2.5吸水速度慢";
+            var md5 = "";
+            resultStr = Trim(resultStr);
+            resultStr = SelectWord(resultStr);
+            md5 = $.md5("f33752d7ffd240859faa03605e80493d"+"NaiYou" + resultStr);
+            $.getJSON("http://www.youziku.com/webfont/CSSPOST?jsoncallback=?", { "id": md5, "guid": "f33752d7ffd240859faa03605e80493d", "type": "5" }, function (json) {
+                if (json.result == 0) { //alert("需要生成");
+                    $.post("http://www.youziku.com/webfont/PostCorsCreateFont", { "name": "NaiYou", "gid": "f33752d7ffd240859faa03605e80493d", "type": "5", "text": resultStr }, function (json) {
+                        if (json == "0") { //alert("参数不对");//传递的参数不对，请检查name,guid,type是否正确
+                        } else if (json == "2") { //alert("超过每日生成字体数的上限");
+                        } else if (json == "3") { //alert("当前正在生成请稍后");
+                        } else { //alert("正在生成");//第一次调用需要生成webfont文件，文件生成一般只需几秒，安全起见请您在30s后刷新页面
+                        }
+                    });
+                }
+                else { //alert("下载css文件");
+                    loadExtentFile("http://www.youziku.com/webfont/css?id=" + md5 + "&guid=" + "f33752d7ffd240859faa03605e80493d" + "&type=5");
+                }
+            });
+        })();
+    </script>
 </html>

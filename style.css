@@ -1,12 +1,6 @@
-@font-face
-{
-	font-family: 奶油小甜心;
-	src: url(奶油小甜心.ttf);
-}
-
 * { margin:0px; padding:0px; font-size: 14px; font-family: "Hiragino Sans GB","Microsoft YaHei","微软雅黑",tahoma,arial,simsun,"宋体"; }
 
-.text { font-family: 奶油小甜心; }
+.NaiYou {} /* Load 奶油小甜心 from 有字库 */
 .layer { position: absolute; z-index: 0; top: 0; left: 0; width: 100%; height: 100%; }
 
 #loading { z-index: 9; background: white url('images/loading.gif') no-repeat fixed center; }

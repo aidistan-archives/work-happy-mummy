@@ -215,7 +215,7 @@ view.refresh_cloud = function(){
         .append("g")
         .attr("transform", "translate("+cloud_width/2+","+cloud_height/2+")")
         .selectAll("text").data(words).enter().append("text")
-        .classed({"tag":true, "text":true})
+        .classed({"tag":true, "NaiYou":true})
         .style("font-size", function(d) { return d.size + "px"; })
         .style("fill", view.tag.color)
         .style("opacity", function(d) { return d.opacity; })
