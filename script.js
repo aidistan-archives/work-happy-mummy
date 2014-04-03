@@ -89,6 +89,7 @@ view.welcome = {
       // Show the tips
       $("#welcome #tips").fadeIn(500, function(){
         // Prepare feature layer
+        view.basket.initialize();
         view.refresh("feature");
         // Delay then dismiss welcome
         $("#welcome").delay(1000).fadeOut(500, function() {$(this).hide(); });
@@ -118,7 +119,14 @@ view.refresh_background = function() {
 }
 
 view.basket = {
+  initialize:function() {
+    d3.selectAll("#basket .button")
+      .on("mouseover", function(){ d3.select(this).transition().style("opacity", 1); })
+      .on("mouseout", function(){ d3.select(this).transition().style("opacity", 0.6); })
+      .transition().style("opacity", 0.6);
+  },
   refresh:function() {
+    // Calculate the width
     $("#basket #content").css("margin", "0px " + 
         ($("#basket #right.side").width()+0) + "px 0px " + 
         ($("#basket #left.side").width()+0) + "px");
@@ -162,9 +170,7 @@ view.basket = {
         .transition().style("opacity", 0.3);
     } else {
       d3.select("#basket #up.button").style("cursor", "default")
-        .on("mouseover", null)
-        .on("mouseout", null)
-        .on("click", null)
+        .on("mouseover", null).on("mouseout", null).on("click", null)
         .transition().style("opacity", 0);
     }
     if(page < view.basket.pageMax) {
@@ -175,9 +181,7 @@ view.basket = {
         .transition().style("opacity", 0.3);
     } else {
       d3.select("#basket #down.button").style("cursor", "default")
-        .on("mouseover", null)
-        .on("mouseout", null)
-        .on("click", null)
+        .on("mouseover", null).on("mouseout", null).on("click", null)
         .transition().style("opacity", 0);
     }
     view.basket.page = page;
@@ -324,7 +328,9 @@ view.tag = {
 ctrl.status = "loading"
 
 ctrl.onLoad = function() {
+  // Initialization
   $("#product").hide();
+
 
   // Set AJAX watcher
   ctrl.ajax = setInterval(function(){

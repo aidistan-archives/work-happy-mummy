@@ -16,7 +16,7 @@ File.open("data.txt").each do |line|
   col[1].split(/\s*，\s*|\s*,\s*/).each { |tag|  hash[col[0]]['tags'][tag] = true }
 end
 
-fout = File.open("../data.v1.1.0.json", 'w:utf-8')
+fout = File.open("../data.json", 'w:utf-8')
 fout.puts $if_pretty ? JSON.pretty_generate(hash) : hash.to_json
 
 

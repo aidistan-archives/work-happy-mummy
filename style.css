@@ -12,16 +12,23 @@
 	#welcome #tips { font-size: 60px; cursor: default; }
 
 #background { z-index: -1; overflow: hidden; }
-	#background img { position:relative; opacity: 0.1; }
+	#background img { position: relative; opacity: 0.1; }
 
 #basket { z-index: 1; top: auto; bottom: 0; height: 100px; background: rgba(255,255,255, 0.38); }
 	#basket .side { position: absolute; }
 		#basket #left.side { left: 0px; }
 		#basket #right.side { right: 0px; }
-		#basket .button { width:24px; height:24x; line-height: 24px; font-size: 16px; font-weight: bold; text-align: center; color: white; background: #666; border-radius: 50%; opacity: 0; }
-		#basket .button { transform:rotate(90deg); -ms-transform:rotate(90deg); /* IE 9 */ -webkit-transform:rotate(90deg); /* Opera, Chrome, and Safari */ }
-		#basket #up.button { margin: 23px 10px 6px; }
-		#basket #down.button { margin: 6px 10px 0px; }
+			#basket tr { height: 50px; }
+			#basket tr:nth-child(1) .button { margin: 17px 3px 3px 3px; }
+			#basket tr:nth-child(2) .button { margin: 3px 3px 17px 3px; }
+		#basket .button { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+		#basket .button img { width: 30px; height: 30px; }
+			#basket #up.button { background: #000; }
+			#basket #down.button { background: #000; }
+			#basket #reset.button { background: #EA428A; }
+			#basket #comment.button { background: #00AEEF; }
+			#basket #logo.button { background: #8BCB30; }
+
 	#basket #content { width: auto; height: 100%; overflow: hidden; }
 		#basket .item { width: 100px; height: auto; margin: 1px 0px; display: inline-block; }
 		#basket .item img { width: 100px; height: auto; cursor: pointer; }
