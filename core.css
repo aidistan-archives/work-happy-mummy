@@ -6,8 +6,9 @@
 #loading { z-index: 9; background: white url('images/loading.gif') no-repeat fixed center; }
 
 #welcome { z-index: 8; background: #8BCB30;}
+	#welcome #wrapper { position: relative; }
 	#welcome p { text-align: center; color: white; }
-	#welcome #title { font-size: 120px; cursor: pointer; text-shadow:0 0 0 #fff; transition: text-shadow 0.2s; -webkit-transition: text-shadow 0.2s;}
+	#welcome #title { position: relative; display: inline; font-size: 120px; cursor: pointer; text-shadow:0 0 0 #fff; transition: text-shadow 0.2s; -webkit-transition: text-shadow 0.2s;}
 	#welcome #title:hover { text-shadow:0 0 5px #fff; transition: text-shadow 0.2s; -webkit-transition: text-shadow 0.2s; }
 	#welcome #tips { font-size: 60px; cursor: default; }
 

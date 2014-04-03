@@ -1,10 +1,9 @@
 "use strict";
 
-var model = {}, view = {}, ctrl = {}; $(function() { ctrl.onLoad(); });
-
 /**
  * Model
  */
+var model = {}
 
 model.ajax = {
   "data":false
@@ -20,7 +19,7 @@ $.ajax({
   success: function(json) { 
     model.data = json;
     /*
-     * Storing all choices and their status
+     * Storing all choices and their state
      *   true: choices matched selected tags
      *   false: choices unmatched selected tags
      *
@@ -34,7 +33,7 @@ $.ajax({
       return map;
     }());
     /**
-     * Storing all tags and their status
+     * Storing all tags and their state
      *   0: tags in conflict with selected tags
      *   1: tags compatible with selected tags
      *   2: selected tags
@@ -55,76 +54,63 @@ $.ajax({
  * View
  */
 
-view.onResize = function() { view.refresh(ctrl.status); }
-
-view.refresh = function(status) {
-  if (status == "welcome") {
-    view.welcome.refresh();
-  } else if (status == "feature") {
-    view.refresh_background()
-        .refresh_cloud();
-    view.basket.refresh();
-  }
-  return this
+var view = {
+  refresh:function(state) {
+    switch (typeof state !== "undefined" ? state : ctrl.state) {
+    case 'loading': break;
+    case 'welcome': this.welcome.refresh(); break;
+    case 'feature': this.feature.refresh(); break;
+    case 'product': break;
+    }
+    return this
+  },
+  onResize:function() { view.refresh(); }
 }
 
-view.welcome = { 
+view.welcome = {
   enter:function() {
-    this.refresh();
     $("#welcome #tips").hide();
     $("#welcome #title")
-      .hide().fadeIn(1000)
+      .hide().fadeIn(2000)
       .click(function(){
         $(this).unbind();
-        ctrl.gotoFeature();
+        ctrl.moveOn();
       });
+    this.refresh();
   },
   refresh:function() {
     $("#welcome #wrapper").css("top", ($(window).height() - $("#welcome #wrapper").height())>>1);
+    $("#welcome #title").css("left", ($(window).width() - $("#welcome #title").width())>>1);
   },
   leave:function() {
+    // Dismiss the title
     $("#welcome #title").fadeOut(1000, function(){
-      // Dismiss the title
-      $("#welcome #title").hide();
       // Show the tips
       $("#welcome #tips").fadeIn(500, function(){
-        // Prepare feature layer
-        view.basket.initialize();
-        view.refresh("feature");
+        // Prepare feature stage
+        view.feature.prepare();
         // Delay then dismiss welcome
-        $("#welcome").delay(1000).fadeOut(500, function() {$(this).hide(); });
+        $("#welcome").delay(1000).fadeOut(500);
       });
     });
   }
 }
 
-view.refresh_background = function() {
-  var win = $(window),
-      img = $("#background img"),
-      win_ratio = win.width() / win.height(),
-      img_ratio = img.width() / img.height();
-  // Fit center
-  if ( win_ratio < img_ratio ) {
-    img.css("width", "auto");
-    img.css("height", win.height());
-    img.css("left", -0.5*(img.width()-win.width()));
-    img.css("top", 0);
-  } else {
-    img.css("width", win.width());
-    img.css("height", "auto");
-    img.css("left", 0);
-    img.css("top", -0.5*(img.height()-win.height()));
-  }
-  return this;
-}
-
-view.basket = {
-  initialize:function() {
+view.feature = {
+  prepare:function() {
     d3.selectAll("#basket .button")
       .on("mouseover", function(){ d3.select(this).transition().style("opacity", 1); })
       .on("mouseout", function(){ d3.select(this).transition().style("opacity", 0.6); })
       .transition().style("opacity", 0.6);
+    this.refresh();
   },
+  refresh:function() {
+    view.refresh_cloud();
+    view.basket.refresh();
+  }
+}
+
+view.basket = {
   refresh:function() {
     // Calculate the width
     $("#basket #content").css("margin", "0px " + 
@@ -203,7 +189,7 @@ view.refresh_cloud = function(){
       return {
         text: d.key,
         size: 14 + Math.random() * 36,
-        status: d.value,
+        state: d.value,
         opacity: d.value > 0 ? 1 : 0.1,
       };
     }))
@@ -239,14 +225,14 @@ view.refresh_cloud = function(){
 view.tag = {
   colors:["#00AEEF", "#EA428A", "#EED500", "#F5A70D", "#8BCB30", "#9962C1"],
   color:function(d, i) {
-    switch(d.status) {
+    switch(d.state) {
     case 0: return "#ccc";
     case 1: return view.tag.colors[i % view.tag.colors.length];
     case 2: return "#333";
     }
   },
   onMouseover:function(d) {
-    if (d.status == 0) { return; }
+    if (d.state == 0) { return; }
     d3.selectAll("#cloud g text").transition()
       .style("opacity", "0.1")
       .style("font-size", function(d) { return d.size + "px"; })
@@ -260,7 +246,7 @@ view.tag = {
       .attr("transform", "translate(" + [d.x, d.y] + ")");
   },
   onMouseout:function(d) {
-    if (d.status == 0) { return; }
+    if (d.state == 0) { return; }
     d3.selectAll("#cloud g text").transition()
       .style("opacity", function(d) { return d.opacity; })
       .style("font-size", function(d) { return d.size + "px"; })
@@ -269,9 +255,9 @@ view.tag = {
       });
   },
   onClick:function(d) {
-    if (d.status == 0) { return; }
-    // Flip the status
-    model.tags.set(d.text, d.status==1 ? 2 : 1);
+    if (d.state == 0) { return; }
+    // Flip the state
+    model.tags.set(d.text, d.state==1 ? 2 : 1);
     // Store checked and reset to unavailable
     var selected_tags = [];
     model.tags.forEach(function(key, value){
@@ -302,8 +288,8 @@ view.tag = {
     // Update the data for cloud
     var data = d3.selectAll("#cloud g text").data();
     for (var i=0; i<data.length; i++) {
-      data[i].status = model.tags.get(data[i].text);
-      data[i].opacity = data[i].status > 0 ? 1 : 0.1
+      data[i].state = model.tags.get(data[i].text);
+      data[i].opacity = data[i].state > 0 ? 1 : 0.1
     }
     // Update views
     view.basket.refresh();
@@ -318,19 +304,9 @@ view.tag = {
  * Controller
  */
 
-/**
- * Status of the controller
- *   loading:0
- *   welcome:1
- *   feature:2
- *   product:3
- */
-ctrl.status = "loading"
-
-ctrl.onLoad = function() {
+window.onload = function() {
   // Initialization
   $("#product").hide();
-
 
   // Set AJAX watcher
   ctrl.ajax = setInterval(function(){
@@ -346,7 +322,7 @@ ctrl.onLoad = function() {
 
     if (allDone) {
       clearInterval(ctrl.ajax);
-      ctrl.gotoWelcome();
+      ctrl.moveOn();
     }
   }, 1000);
 
@@ -354,15 +330,39 @@ ctrl.onLoad = function() {
   $(window).resize(view.onResize);
 }
 
+var ctrl = {
+  state:"loading",
+  states:{
+    loading:0,
+    welcome:1,
+    feature:2,
+    product:3
+  }
+}
+
+ctrl.moveOn = function() {
+  switch (ctrl.state) {
+  case 'loading':
+    $("#loading").hide();
+    ctrl.state = "welcome";
+    view.welcome.enter();
+    break;
+  case 'welcome':
+    view.welcome.leave();
+    ctrl.state = "feature";
+    break;
+  }
+}
+
 ctrl.gotoWelcome = function() {
   $("#loading").hide();
-  ctrl.status = "welcome";
+  ctrl.state = "welcome";
   view.welcome.enter();
 }
 
 ctrl.gotoFeature = function() {
   view.welcome.leave();
-  ctrl.status = "feature";
+  ctrl.state = "feature";
 }
 
 ctrl.gotoProduct = function(choice) {
