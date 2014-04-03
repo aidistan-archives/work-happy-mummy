@@ -84,77 +84,94 @@ model.update = function() {
  * View
  */
 
-var view = {
-  refresh:function(status) {
-    switch (typeof status !== "undefined" ? status : ctrl.status) {
-    case 'loading': break;
-    case 'welcome': this.welcome.refresh(); break;
-    case 'feature': this.feature.refresh(); break;
-    case 'product': break;
-    }
-    return this
-  },
-  onResize:function() { view.refresh(); }
+var view = {}
+
+view.refresh = function(status) {
+  switch (typeof status !== "undefined" ? status : ctrl.status) {
+  case 'loading': break;
+  case 'welcome': this.welcome.refresh(); break;
+  case 'feature': this.feature.refresh(); break;
+  case 'product': break;
+  }
+  return this
 }
 
-view.welcome = {
-  enter:function() {
-    $("#welcome #tips").hide();
-    $("#welcome #title")
-      .hide().fadeIn(2000)
-      .click(function(){
-        $(this).unbind();
-        ctrl.moveOn();
-      });
-    this.refresh();
-  },
-  refresh:function() {
-    $("#welcome #wrapper").css("top", ($(window).height() - $("#welcome #wrapper").height())>>1);
-    $("#welcome #title").css("left", ($(window).width() - $("#welcome #title").width())>>1);
-  },
-  leave:function() {
-    // Dismiss the title
-    $("#welcome #title").fadeOut(1000, function(){
-      // Show the tips
-      $("#welcome #tips").fadeIn(500, function(){
-        // Prepare feature stage
-        view.feature.prepare();
-        // Delay then dismiss welcome
-        $("#welcome").delay(1000).fadeOut(500);
-      });
+view.onResize = function() { view.refresh(); }
+
+view.welcome = {}
+
+view.welcome.enter = function() {
+  $("#welcome #tips").hide();
+  $("#welcome #title")
+    .hide().fadeIn(1000)
+    .click(function(){
+      $(this).unbind();
+      ctrl.moveOn();
     });
-  }
+  this.refresh();
 }
 
-view.feature = {
-  prepare:function() {
-    d3.selectAll("#basket .button")
-      .on("mouseover", function(){ d3.select(this).transition().style("opacity", 1); })
-      .on("mouseout", function(){ d3.select(this).transition().style("opacity", 0.6); })
-      .transition().style("opacity", 0.6);
+view.welcome.refresh = function() {
+  $("#welcome #wrapper").css("top", ($(window).height() - $("#welcome #wrapper").height())>>1);
+  $("#welcome #title").css("left", ($(window).width() - $("#welcome #title").width())>>1);
+}
 
-    d3.select("#basket #reset.button").on("click", function(){
-      // Reset
-      model.tags.forEach(function(key){ model.tags.set(key, 1); });
-      // Update
-      model.update();
-      view.feature.update();
-      d3.selectAll("#cloud g text").transition().style("opacity", function(d) { return d.opacity; });
+view.welcome.leave = function() {
+  // Dismiss the title
+  $("#welcome #title").fadeOut(1000, function(){
+    // Show the tips
+    $("#welcome #tips").fadeIn(500, function(){
+      // Prepare feature stage
+      view.feature.prepare();
+      // Delay then dismiss welcome
+      $("#welcome").delay(1000).fadeOut(500);
     });
-    d3.select("#basket #comment.button").on("click", function(){
+  });
+}
+
+view.feature = {}
+
+view.feature.prepare = function() {
+  d3.selectAll("#basket .button")
+    .on("mouseover", view.basket.button.onMouseover)
+    .on("mouseout", view.basket.button.onMouseout)
+    .on("click.button", view.basket.button.onClick)
+    .transition().style("opacity", 0.6);
+  // Hack for logo
+  d3.select("#logo")
+    .on("mouseout", function(){
+      d3.select(this).transition().style("opacity", 0.6).style("width", "66px").style("height", "66px")
+        .select("img").style("width", "66px").style("height", "66px");
+    })
+    .on("click.button", function(){
+      var trans = d3.select(this).transition().duration(100).style("width", "54px").style("height", "54px")
+      trans.select("img").style("width", "54px").style("height", "54px");
+      trans.transition().duration(100).style("width", "66px").style("height", "66px")
+           .select("img").style("width", "66px").style("height", "66px");
     });
-    d3.select("#basket #logo.button").on("click", function(){
-    });
-    this.refresh();
-  },
-  refresh:function() {
-    view.cloud.refresh();
-    view.basket.refresh();
-  },
-  update:function() {
-    view.cloud.update();
-    view.basket.refresh();
-  }
+
+  d3.select("#basket #reset.button").on("click", function(){
+    // Reset
+    model.tags.forEach(function(key){ model.tags.set(key, 1); });
+    // Update
+    model.update();
+    view.feature.update();
+    d3.selectAll("#cloud g text").transition().style("opacity", function(d) { return d.opacity; });
+  });
+  d3.select("#basket #comment.button").on("click", function(){ ctrl.showOff("comment"); });
+  d3.select("#basket #logo.button").on("click", function(){ ctrl.showOff("logo"); });
+
+  this.refresh();
+}
+
+view.feature.refresh = function() {
+  view.cloud.refresh();
+  view.basket.refresh();
+}
+
+view.feature.update = function() {
+  view.cloud.update();
+  view.basket.refresh();
 }
 
 view.basket = {
@@ -191,36 +208,54 @@ view.basket = {
       .append("img")
       .attr("title", function(d) { return d; })
       .attr("src", function(d) { return model.data[d].basket_img; })
-      .on("click", function(){ ctrl.gotoProduct(d3.select(this).attr("title")); })
+      .on("click", function(){ ctrl.showOff(d3.select(this).attr("title")); })
       .style("opacity",0).transition().style("opacity",1);
     divs.exit().transition().style("opacity",0).remove();
     // Buttons
     if(page > 0) {
       d3.select("#basket #up.button").style("cursor", "pointer")
-        .on("mouseover", function(){ d3.select(this).transition().style("opacity", 0.6); })
-        .on("mouseout", function(){ d3.select(this).transition().style("opacity", 0.3); })
-        .on("click", view.basket.scrollUp)
+        .on("mouseover", view.basket.button.onMouseover)
+        .on("mouseout", view.basket.button.onMouseout)
+        .on("click.scroll", view.basket.scrollUp)
         .transition().style("opacity", 0.3);
     } else {
       d3.select("#basket #up.button").style("cursor", "default")
-        .on("mouseover", null).on("mouseout", null).on("click", null)
-        .transition().style("opacity", 0);
+        .on("mouseover", null).on("mouseout", null).on("click.scroll", null)
+        .transition().delay(200).style("opacity", 0);
     }
     if(page < view.basket.pageMax) {
       d3.select("#basket #down.button").style("cursor", "pointer")
-        .on("mouseover", function(){ d3.select(this).transition().style("opacity", 0.6); })
-        .on("mouseout", function(){ d3.select(this).transition().style("opacity", 0.3); })
-        .on("click", view.basket.scrollDown)
+        .on("mouseover", view.basket.button.onMouseover)
+        .on("mouseout", view.basket.button.onMouseout)
+        .on("click.scroll", view.basket.scrollDown)
         .transition().style("opacity", 0.3);
     } else {
       d3.select("#basket #down.button").style("cursor", "default")
-        .on("mouseover", null).on("mouseout", null).on("click", null)
-        .transition().style("opacity", 0);
+        .on("mouseover", null).on("mouseout", null).on("click.scroll", null)
+        .transition().delay(200).style("opacity", 0);
     }
     view.basket.page = page;
   },
   scrollUp:function() { view.basket.scrollTo(view.basket.page - 1); },
   scrollDown:function() { view.basket.scrollTo(view.basket.page + 1); }
+}
+
+view.basket.button = {}
+
+view.basket.button.onMouseover = function() {
+  d3.select(this).transition().style("opacity", 1);
+}
+
+view.basket.button.onMouseout = function() {
+  d3.select(this).transition().style("opacity", 0.6).style("width", "30px").style("height", "30px")
+    .select("img").style("width", "30px").style("height", "30px");
+}
+
+view.basket.button.onClick = function() {
+  var trans = d3.select(this).transition().duration(100).style("width", "24px").style("height", "24px")
+  trans.select("img").style("width", "24px").style("height", "24px");
+  trans.transition().duration(100).style("width", "30px").style("height", "30px")
+       .select("img").style("width", "30px").style("height", "30px");
 }
 
 view.cloud = {
@@ -374,15 +409,24 @@ ctrl.moveOn = function() {
     ctrl.status = "feature";
     break;
   }
+  return this;
 }
 
-ctrl.gotoProduct = function(choice) {
-  $("#product #title").text(choice);
-  $("#product #image").attr("src", model.data[choice].product_img);
-  $("#product #desc").text(model.data[choice].desc);
-  $("#product").fadeIn('fast').click(ctrl.backtoFeature);
-}
-
-ctrl.backtoFeature = function() {
-  $("#product").unbind().fadeOut('fast');
+ctrl.showOff = function(choice) {
+  if (choice == "logo") {
+    $("#product #title").text("关于乳芽").css("color", "#8BCB30");
+    $("#product #image").hide();
+    $("#product #desc").text("我们其实是来打酱油的");
+  } else if (choice == "comment") {
+    $("#product #title").text("吐槽一下").css("color", "#00AEEF");
+    $("#product #image").hide();
+    $("#product #desc").text("槽池已满...");
+  } else {
+    // Product
+    $("#product #title").text(choice).css("color", "white");
+    $("#product #image").attr("src", model.data[choice].product_img).show();
+    $("#product #desc").text(model.data[choice].desc);
+  }
+  // For exit
+  $("#product").fadeIn('fast').click(function(){ $("#product").unbind().fadeOut('fast'); });
 }
