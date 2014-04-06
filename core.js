@@ -205,6 +205,7 @@ view.basket = {
       .data(choices, function(d, i){ return d; });
     divs.enter().append("div")
       .classed({"item":true})
+      .style("border-color", function(d){ return model.data[d].basket_color })
       .append("img")
       .attr("title", function(d) { return d; })
       .attr("src", function(d) { return model.data[d].basket_img; })
@@ -313,48 +314,52 @@ view.cloud = {
   }
 }
 
-view.tag = {
-  colors:["#00AEEF", "#EA428A", "#EED500", "#F5A70D", "#8BCB30", "#9962C1"],
-  color:function(d, i) {
-    switch(d.status) {
-    case 0: return "#ccc";
-    case 1: return view.tag.colors[i % view.tag.colors.length];
-    case 2: return "#333";
-    }
-  },
-  onMouseover:function(d) {
-    if (d.status == 0) { return; }
-    d3.selectAll("#cloud g text").transition()
-      .style("opacity", "0.1")
-      .style("font-size", function(d) { return d.size + "px"; })
-      .attr("transform", function(d) {
-        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-      });
+view.tag = {}
 
-    d3.select(this).transition()
-      .style("opacity", "1")
-      .style("font-size", 60 + "px")
-      .attr("transform", "translate(" + [d.x, d.y] + ")");
-  },
-  onMouseout:function(d) {
-    if (d.status == 0) { return; }
-    d3.selectAll("#cloud g text").transition()
-      .style("opacity", function(d) { return d.opacity; })
-      .style("font-size", function(d) { return d.size + "px"; })
-      .attr("transform", function(d) {
-        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-      });
-  },
-  onClick:function(d) {
-    if (d.status == 0) { return; }
-    model.tags.set(d.text, d.status==1 ? 2 : 1);
-    d3.select(this).transition().style("font-size", "0px")
-                   .transition().style("font-size", "60px");
-    // Update model
-    model.update();
-    // Update views
-    view.feature.update();
+view.tag.colors = ["#00AEEF", "#EA428A", "#EED500", "#F5A70D", "#8BCB30", "#9962C1"];
+
+view.tag.color = function(d, i) {
+  switch(d.status) {
+  case 0: return "#ccc";
+  case 1: return view.tag.colors[i % view.tag.colors.length];
+  case 2: return "#333";
   }
+}
+
+view.tag.onMouseover = function(d) {
+  if (d.status == 0) { return; }
+  d3.selectAll("#cloud g text").transition()
+    .style("opacity", "0.1")
+    .style("font-size", function(d) { return d.size + "px"; })
+    .attr("transform", function(d) {
+      return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+    });
+
+  d3.select(this).transition()
+    .style("opacity", "1")
+    .style("font-size", 60 + "px")
+    .attr("transform", "translate(" + [d.x, d.y] + ")");
+}
+
+view.tag.onMouseout = function(d) {
+  if (d.status == 0) { return; }
+  d3.selectAll("#cloud g text").transition()
+    .style("opacity", function(d) { return d.opacity; })
+    .style("font-size", function(d) { return d.size + "px"; })
+    .attr("transform", function(d) {
+      return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+    });
+}
+
+view.tag.onClick = function(d) {
+  if (d.status == 0) { return; }
+  model.tags.set(d.text, d.status==1 ? 2 : 1);
+  d3.select(this).transition().style("font-size", "0px")
+                 .transition().style("font-size", "60px");
+  // Update model
+  model.update();
+  // Update views
+  view.feature.update();
 }
 
 /**
@@ -414,16 +419,16 @@ ctrl.moveOn = function() {
 
 ctrl.showOff = function(choice) {
   if (choice == "logo") {
-    $("#product #title").text("关于乳芽").css("color", "#8BCB30");
+    $("#product #title").text("关于乳芽").addClass("NaiYou").css("color", "#8BCB30");
     $("#product #image").hide();
     $("#product #desc").text("我们其实是来打酱油的");
   } else if (choice == "comment") {
-    $("#product #title").text("吐槽一下").css("color", "#00AEEF");
+    $("#product #title").text("吐槽一下").addClass("NaiYou").css("color", "#00AEEF");
     $("#product #image").hide();
     $("#product #desc").text("槽池已满...");
   } else {
     // Product
-    $("#product #title").text(choice).css("color", "white");
+    $("#product #title").text(choice).removeClass("NaiYou").css("color", "white");
     $("#product #image").attr("src", model.data[choice].product_img).show();
     $("#product #desc").text(model.data[choice].desc);
   }
