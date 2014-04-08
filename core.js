@@ -430,7 +430,7 @@ ctrl.showOff = function(choice) {
     // Product
     $("#product #title").text(choice).removeClass("NaiYou").css("color", "white");
     $("#product #image").attr("src", model.data[choice].product_img).show();
-    $("#product #desc").text(model.data[choice].desc);
+    $("#product #desc").html(model.data[choice].desc);
   }
   // For exit
   $("#product").fadeIn('fast').click(function(){ $("#product").unbind().fadeOut('fast'); });
