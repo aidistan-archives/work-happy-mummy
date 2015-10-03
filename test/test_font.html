@@ -1,54 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>javascript引用demo</title>
+  <title>javascript引用demo</title>
 </head>
 <body>
-    <div class="NaiYou" style="font-size: 24px">
-        <p>
-            在某天醒来后，你用某品牌的滴漏咖啡壶给自己煮了一杯可疑的蓝山或是哥伦比亚咖啡，你加了点糖，加了点植脂末，混合嘴边没刷干净的牙膏沫一仰头一饮而尽，但是直到吃中饭前你还是觉得昏昏沉沉好像咖啡不再像以前那么管用了。你是对的——也有可能你只是欠睡，有点神经错乱。但是知道什么时候喝咖啡最能振奋自己是十分微秒的科学难题，不要再学傻子们清早一杯咖啡的习惯，他们是错的。</p>
-        <p>
-            美国健康科学统一服务大学的Steven Miller在Gizmod发表了一篇文章告诉人们如何最大效率利用一杯咖啡给人带来的快乐，要点在于理解咖啡的药理学——也就是理解你身体的生物节律如何与咖啡因这种成瘾品相互作用。(咖啡因在美国依然被视作成瘾品)</p>
-        <p>
-            你身体中最重要的节律是生物钟，24小时日夜循环，也可以通过外界因素进行调整，因此也叫授时因子。对喝咖啡成瘾的笔头工作的哺乳类动物，比如我们自己(原文)，最重要的授时因子就是光。</p>
-        <p>
-            你体内的生物钟和授时因子会影响你身体产生皮质醇，也叫做压力荷尔蒙，可以让人保持警惕。大多数人血液中皮质醇含量在早上8点-9点达到顶点，然后在中午12点和1点再次到顶。如果你正处在皮质醇水平较高的时间，千万不要碰你的java。一天中的这些时间段人们最警觉，所以喝咖啡的效率最低。</p>
-        <p>
-            这些时候往往是你身体最不需要咖啡因的时候，一直在这些时段喝咖啡只能增加你对咖啡因的耐受性。相反Miller教授建议大家在早上9:30-11：30这段时间喝咖啡，或者在下午1:30左右喝咖啡。</p>
-    </div>
+  <div class="NaiYou" style="font-size: 24px">
+    <p>在某天醒来后，你用某品牌的滴漏咖啡壶给自己煮了一杯可疑的蓝山或是哥伦比亚咖啡，你加了点糖，加了点植脂末，混合嘴边没刷干净的牙膏沫一仰头一饮而尽，但是直到吃中饭前你还是觉得昏昏沉沉好像咖啡不再像以前那么管用了。你是对的——也有可能你只是欠睡，有点神经错乱。但是知道什么时候喝咖啡最能振奋自己是十分微秒的科学难题，不要再学傻子们清早一杯咖啡的习惯，他们是错的。</p>
+    <p>美国健康科学统一服务大学的Steven Miller在Gizmod发表了一篇文章告诉人们如何最大效率利用一杯咖啡给人带来的快乐，要点在于理解咖啡的药理学——也就是理解你身体的生物节律如何与咖啡因这种成瘾品相互作用。(咖啡因在美国依然被视作成瘾品)</p>
+    <p>你身体中最重要的节律是生物钟，24小时日夜循环，也可以通过外界因素进行调整，因此也叫授时因子。对喝咖啡成瘾的笔头工作的哺乳类动物，比如我们自己(原文)，最重要的授时因子就是光。</p>
+    <p>你体内的生物钟和授时因子会影响你身体产生皮质醇，也叫做压力荷尔蒙，可以让人保持警惕。大多数人血液中皮质醇含量在早上8点-9点达到顶点，然后在中午12点和1点再次到顶。如果你正处在皮质醇水平较高的时间，千万不要碰你的java。一天中的这些时间段人们最警觉，所以喝咖啡的效率最低。</p>
+    <p>这些时候往往是你身体最不需要咖啡因的时候，一直在这些时段喝咖啡只能增加你对咖啡因的耐受性。相反Miller教授建议大家在早上9:30-11：30这段时间喝咖啡，或者在下午1:30左右喝咖啡。</p>
+  </div>
 </body>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript" src="http://www.youziku.com/UserDownFile/jquery.md5.js"></script>
 <script type="text/javascript">
-    function youziku46613() {
-        var resultStr = $(".NaiYou").text();
-        var md5 = "";
-        resultStr = Trim(resultStr);
-        resultStr = SelectWord(resultStr);
-        md5 = $.md5("f33752d7ffd240859faa03605e80493d" + "NaiYou" + resultStr);
-        $.getJSON("http://www.youziku.com/webfont/CSSPOST?jsoncallback=?", { "id": md5, "guid": "f33752d7ffd240859faa03605e80493d", "type": "5" }, function (json) {
-            if (json.result == 0) {
-                alert("需要生成");
-                $.post("http://www.youziku.com/webfont/PostCorsCreateFont", { "name": "NaiYou", "gid": "f33752d7ffd240859faa03605e80493d", "type": "5", "text": resultStr }, function (json) {
-                    if (json == "0") { 
-                        alert("参数不对");//传递的参数不对，请检查name,guid,type是否正确
-                    } else if (json == "2") {
-                        alert("超过每日生成字体数的上限");
-                    } else if (json == "3") { 
-                        alert("当前正在生成请稍后");
-                    } else {
-                        alert("正在生成");//第一次调用需要生成webfont文件，文件生成一般只需几秒，安全起见请您在30s后刷新页面
-                    }
-                });
-            }
-            else {
-                alert("下载css文件");
-                loadExtentFile("http://www.youziku.com/webfont/css?id=" + md5 + "&guid=" + "f33752d7ffd240859faa03605e80493d" + "&type=5");
-            }
+  function youziku46613() {
+    var resultStr = $(".NaiYou").text();
+    var md5 = "";
+    resultStr = Trim(resultStr);
+    resultStr = SelectWord(resultStr);
+    md5 = $.md5("f33752d7ffd240859faa03605e80493d" + "NaiYou" + resultStr);
+    $.getJSON("http://www.youziku.com/webfont/CSSPOST?jsoncallback=?", { "id": md5, "guid": "f33752d7ffd240859faa03605e80493d", "type": "5" }, function (json) {
+      if (json.result == 0) {
+        alert("需要生成");
+        $.post("http://www.youziku.com/webfont/PostCorsCreateFont", { "name": "NaiYou", "gid": "f33752d7ffd240859faa03605e80493d", "type": "5", "text": resultStr }, function (json) {
+          if (json == "0") {
+            alert("参数不对");//传递的参数不对，请检查name,guid,type是否正确
+          } else if (json == "2") {
+            alert("超过每日生成字体数的上限");
+          } else if (json == "3") {
+            alert("当前正在生成请稍后");
+          } else {
+            alert("正在生成");//第一次调用需要生成webfont文件，文件生成一般只需几秒，安全起见请您在30s后刷新页面
+          }
         });
-    }
-    (function youziku() {
-        youziku46613();
-    })()
+      }
+      else {
+        alert("下载css文件");
+        loadExtentFile("http://www.youziku.com/webfont/css?id=" + md5 + "&guid=" + "f33752d7ffd240859faa03605e80493d" + "&type=5");
+      }
+    });
+  }
+  (function youziku() {
+    youziku46613();
+  })()
 </script>
 </html>

@@ -1,91 +1,91 @@
 <!DOCTYPE html>
 <html lang="zh" style="overflow: hidden;">
-    <head>
-        <title>尿布攻略 | 乳芽</title>
-        <meta http-equiv="content-type" content="text/html;charset=utf-8">
-        <meta name="author" content="乳芽">
-        <meta name="keywords" content="尿布, 纸尿裤, 选择, 母婴">
-        <meta name="description" content="帮助您选择合适的尿布类产品">
-        <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
-        <script type="text/javascript" src="lib/d3/d3.min.js" charset="utf-8"></script>
-        <script type="text/javascript" src="lib/d3-cloud/d3.layout.cloud.js" charset="utf-8"></script>
-        <link rel="stylesheet" type="text/css" href="core.css">
-    </head>
-    <body>
-        <div id="loading" class="layer"></div>
+  <head>
+    <title>尿布攻略 | 乳芽</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="author" content="乳芽">
+    <meta name="keywords" content="尿布, 纸尿裤, 选择, 母婴">
+    <meta name="description" content="帮助您选择合适的尿布类产品">
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="lib/d3/d3.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="lib/d3-cloud/d3.layout.cloud.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="core.css">
+  </head>
+  <body>
+    <div id="loading" class="layer"></div>
 
-        <div id="welcome" class="layer">
-            <div id="wrapper">
-                <p id="title" class="NaiYou">尿布攻略</p>
-                <p id="tips" class="NaiYou">请点击您所关注的特点</p>
-            </div>
-        </div>
+    <div id="welcome" class="layer">
+      <div id="wrapper">
+        <p id="title" class="NaiYou">尿布攻略</p>
+        <p id="tips" class="NaiYou">请点击您所关注的特点</p>
+      </div>
+    </div>
 
-        <svg id="cloud" class="layer"></svg>
+    <svg id="cloud" class="layer"></svg>
 
-        <div id="basket" class="layer">
-            <div id="right" class="side">
-                <table>
-                    <thead><tr></tr></thead>
-                    <tbody>
-                        <tr>
-                            <td><div id="up" class="button"><img title="向上翻页" src="images/up.png"></img></div></td>
-                            <td><div id="reset" class="button"><img title="重置选择" src="images/reset.png"></img></div></td>
-                            <td rowspan="2" align="center" style="width: 70px; height: 70px;">
-                                <div id="logo" class="button" style="width: 66px; height: 66px; margin: 0;">
-                                    <img src="images/logo.png" title="关于乳芽" style="width: 66px; height: 66px;"></img>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><div id="down" class="button"><img title="向下翻页" src="images/down.png"></img></div></td>
-                            <td><div id="comment" class="button"><img title="吐槽一下" src="images/comment.png"></img></div></td>
-                        </tr>
-                    </tbody>
-                    <tfoot><tr></tr></tfoot>
-                </table>
-            </div>
-            <div id="content"></div>
-        </div>
+    <div id="basket" class="layer">
+      <div id="right" class="side">
+        <table>
+          <thead><tr></tr></thead>
+          <tbody>
+            <tr>
+              <td><div id="up" class="button"><img title="向上翻页" src="images/up.png"></img></div></td>
+              <td><div id="reset" class="button"><img title="重置选择" src="images/reset.png"></img></div></td>
+              <td rowspan="2" align="center" style="width: 70px; height: 70px;">
+                <div id="logo" class="button" style="width: 66px; height: 66px; margin: 0;">
+                  <img src="images/logo.png" title="关于乳芽" style="width: 66px; height: 66px;"></img>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><div id="down" class="button"><img title="向下翻页" src="images/down.png"></img></div></td>
+              <td><div id="comment" class="button"><img title="吐槽一下" src="images/comment.png"></img></div></td>
+            </tr>
+          </tbody>
+          <tfoot><tr></tr></tfoot>
+        </table>
+      </div>
+      <div id="content"></div>
+    </div>
 
-        <div id="product" class="layer">
-            <div id="wrapper">
-                <p id="title"></p>
-                <img id="image"></img>
-                <div id="desc"></p>
-            </div>
-        </div>
+    <div id="product" class="layer">
+      <div id="wrapper">
+        <p id="title"></p>
+        <img id="image"></img>
+        <div id="desc"></p>
+      </div>
+    </div>
 
-    </body>
-    <script type="text/javascript" src="core.js"></script>
-    <script type="text/javascript" src="http://www.youziku.com/UserDownFile/jquery.md5.js"></script>
-    <script type="text/javascript">
-        (function() {
-            var resultStr = "﻿尿布攻略请点击您所关注的特点吐槽一下关于乳芽 旧衣物利用便宜旧物利用环保清洗繁琐安全放心婆婆喜欢柔软舒适安全卫生吸水力强需消毒竹纤维柔软舒适吸水力强抗菌不耐用松懈变形不密实安全卫生清洗繁琐需消毒便宜环保全棉纱布吸水力强柔软舒适密实耐用贴身舒适开始用比较硬使用繁琐需消毒安全卫生环保生态棉免折叠柔软舒适贴身舒适透气性差吸水力一般易起毛清洗繁琐需消毒环保精梳棉柔软舒适贴身吸水速度慢不易干安全卫生吸水力一般清洗繁琐需消毒环保纸尿裤性别差异活动舒适自由携带使用方便吸水力强安全卫生价格较贵透气性较差年龄差异适合晚上使用纸尿片活动舒适自由吸水力强易漏尿性别差异年龄差异携带使用方便安全卫生透气性差拉拉裤小内裤活动舒适自由周岁后使用携带使用方便安全卫生性别差异年龄差异透气性较差适合晚上使用西瓜皮闽南地区凉爽地域特色气候相关奇葩个性私人定制易生菌不卫生周岁后使用草木灰河南环保方便易用不卫生易感染地域特色无需清洗沙土袋山东干燥舒适方便易用不卫生炒制沙土温暖易感染地域特色无需清洗二维码纸尿裤二维码高科技体检安全价格较高奇葩活动舒适自由携带使用方便吸水力强透气性差无需清洗史代尔纸尿裤会说话高科技价格较高奇葩活动舒适自由携带使用方便吸水力强透气性差无需清洗有机纸尿裤可食用有机玉米环保非转基因较干爽奇葩活动舒适自由携带使用方便吸水力强无需清洗阿玛尼纸尿裤奢侈品昂贵奇葩无需清洗LG黄土纸尿裤有机环保松软舒适奇葩活动舒适自由携带使用方便抗菌无需清洗竹炭纸尿裤竹炭凉爽去除异味自动调湿奇葩抗菌无需清洗小森林活动舒适自由携带使用方便静态负离子纸尿裤抗霾静态负离子小森林价格较高奇葩无需清洗活动舒适自由携带使用方便透气好";
-            var md5 = "";
-            resultStr = Trim(resultStr);
-            resultStr = SelectWord(resultStr);
-            md5 = $.md5("f33752d7ffd240859faa03605e80493d"+"NaiYou" + resultStr);
-            $.getJSON("http://www.youziku.com/webfont/CSSPOST?jsoncallback=?", { "id": md5, "guid": "f33752d7ffd240859faa03605e80493d", "type": "5" }, function (json) {
-                if (json.result == 0) { 
-                    alert("需要生成");
-                    $.post("http://www.youziku.com/webfont/PostCorsCreateFont", { "name": "NaiYou", "gid": "f33752d7ffd240859faa03605e80493d", "type": "5", "text": resultStr }, function (json) {
-                        if (json == "0") { 
-                        alert("参数不对");//传递的参数不对，请检查name,guid,type是否正确
-                        } else if (json == "2") { 
-                        alert("超过每日生成字体数的上限");
-                        } else if (json == "3") { 
-                        alert("当前正在生成请稍后");
-                        } else { 
-                        alert("正在生成");//第一次调用需要生成webfont文件，文件生成一般只需几秒，安全起见请您在30s后刷新页面
-                        }
-                    });
-                }
-                else { 
-                    // alert("下载css文件");
-                    loadExtentFile("http://www.youziku.com/webfont/css?id=" + md5 + "&guid=" + "f33752d7ffd240859faa03605e80493d" + "&type=5");
-                }
-            });
-        })();
-    </script>
+  </body>
+  <script type="text/javascript" src="core.js"></script>
+  <script type="text/javascript" src="http://www.youziku.com/UserDownFile/jquery.md5.js"></script>
+  <script type="text/javascript">
+    (function() {
+      var resultStr = "﻿尿布攻略请点击您所关注的特点吐槽一下关于乳芽 旧衣物利用便宜旧物利用环保清洗繁琐安全放心婆婆喜欢柔软舒适安全卫生吸水力强需消毒竹纤维柔软舒适吸水力强抗菌不耐用松懈变形不密实安全卫生清洗繁琐需消毒便宜环保全棉纱布吸水力强柔软舒适密实耐用贴身舒适开始用比较硬使用繁琐需消毒安全卫生环保生态棉免折叠柔软舒适贴身舒适透气性差吸水力一般易起毛清洗繁琐需消毒环保精梳棉柔软舒适贴身吸水速度慢不易干安全卫生吸水力一般清洗繁琐需消毒环保纸尿裤性别差异活动舒适自由携带使用方便吸水力强安全卫生价格较贵透气性较差年龄差异适合晚上使用纸尿片活动舒适自由吸水力强易漏尿性别差异年龄差异携带使用方便安全卫生透气性差拉拉裤小内裤活动舒适自由周岁后使用携带使用方便安全卫生性别差异年龄差异透气性较差适合晚上使用西瓜皮闽南地区凉爽地域特色气候相关奇葩个性私人定制易生菌不卫生周岁后使用草木灰河南环保方便易用不卫生易感染地域特色无需清洗沙土袋山东干燥舒适方便易用不卫生炒制沙土温暖易感染地域特色无需清洗二维码纸尿裤二维码高科技体检安全价格较高奇葩活动舒适自由携带使用方便吸水力强透气性差无需清洗史代尔纸尿裤会说话高科技价格较高奇葩活动舒适自由携带使用方便吸水力强透气性差无需清洗有机纸尿裤可食用有机玉米环保非转基因较干爽奇葩活动舒适自由携带使用方便吸水力强无需清洗阿玛尼纸尿裤奢侈品昂贵奇葩无需清洗LG黄土纸尿裤有机环保松软舒适奇葩活动舒适自由携带使用方便抗菌无需清洗竹炭纸尿裤竹炭凉爽去除异味自动调湿奇葩抗菌无需清洗小森林活动舒适自由携带使用方便静态负离子纸尿裤抗霾静态负离子小森林价格较高奇葩无需清洗活动舒适自由携带使用方便透气好";
+      var md5 = "";
+      resultStr = Trim(resultStr);
+      resultStr = SelectWord(resultStr);
+      md5 = $.md5("f33752d7ffd240859faa03605e80493d"+"NaiYou" + resultStr);
+      $.getJSON("http://www.youziku.com/webfont/CSSPOST?jsoncallback=?", { "id": md5, "guid": "f33752d7ffd240859faa03605e80493d", "type": "5" }, function (json) {
+        if (json.result == 0) {
+          alert("需要生成");
+          $.post("http://www.youziku.com/webfont/PostCorsCreateFont", { "name": "NaiYou", "gid": "f33752d7ffd240859faa03605e80493d", "type": "5", "text": resultStr }, function (json) {
+            if (json == "0") {
+            alert("参数不对");//传递的参数不对，请检查name,guid,type是否正确
+            } else if (json == "2") {
+            alert("超过每日生成字体数的上限");
+            } else if (json == "3") {
+            alert("当前正在生成请稍后");
+            } else {
+            alert("正在生成");//第一次调用需要生成webfont文件，文件生成一般只需几秒，安全起见请您在30s后刷新页面
+            }
+          });
+        }
+        else {
+          // alert("下载css文件");
+          loadExtentFile("http://www.youziku.com/webfont/css?id=" + md5 + "&guid=" + "f33752d7ffd240859faa03605e80493d" + "&type=5");
+        }
+      });
+    })();
+  </script>
 </html>
